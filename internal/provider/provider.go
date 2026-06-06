@@ -410,12 +410,10 @@ func extractKafkaVersion(image string) string {
 // resolveMetadataVersion derives the KRaft metadata version from the image tag.
 func resolveMetadataVersion(image string) string {
 	switch {
-	case strings.Contains(image, "4.0"):
-		return common.KafkaMetadataVersion4_0
-	case strings.Contains(image, "3.9"):
-		return common.KafkaMetadataVersion3_9
-	case strings.Contains(image, "3.8"):
-		return common.KafkaMetadataVersion3_8
+	case strings.Contains(image, "4.2"):
+		return common.KafkaMetadataVersion4_2
+	case strings.Contains(image, "4.1"):
+		return common.KafkaMetadataVersion4_1
 	default:
 		return common.DefaultMetadataVersion
 	}

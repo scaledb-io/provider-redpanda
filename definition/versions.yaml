@@ -2,8 +2,8 @@
 # Tracks supported Apache Kafka releases managed by the Strimzi operator.
 # Exactly one version per type must be marked `default: true`.
 #
-# Kafka 4.0+ is KRaft-only (ZooKeeper removed entirely).
-# Kafka 3.x runs KRaft via strimzi.io/kraft: enabled annotation.
+# Strimzi 1.0.0 supports Kafka 4.1.x and 4.2.x only (3.x and 4.0 removed).
+# All images: quay.io/strimzi/kafka:1.0.0-kafka-<version>
 #
 # metadataVersion: the KRaft metadata version for each Kafka release.
 # See: https://kafka.apache.org/documentation/#kraft_metadata_version
@@ -11,24 +11,20 @@
 componentTypes:
   kafka:
     versions:
-    - version: "4.0.0"
-      image: quay.io/strimzi/kafka:0.47.0-kafka-4.0.0
+    - version: "4.2.0"
+      image: quay.io/strimzi/kafka:1.0.0-kafka-4.2.0
       default: true
-    - version: "3.9.1"
-      image: quay.io/strimzi/kafka:0.47.0-kafka-3.9.1
-    - version: "3.8.1"
-      image: quay.io/strimzi/kafka:0.45.0-kafka-3.8.1
+    - version: "4.1.2"
+      image: quay.io/strimzi/kafka:1.0.0-kafka-4.1.2
+    - version: "4.1.1"
+      image: quay.io/strimzi/kafka:1.0.0-kafka-4.1.1
 
 # Version bundles: curated sets of compatible component versions.
-# Users set spec.version to a bundle name; the runtime resolves per-component versions.
 versions:
-- name: "4.0"
+- name: "4.2"
   default: true
   components:
-    engine: "4.0.0"
-- name: "3.9"
+    engine: "4.2.0"
+- name: "4.1"
   components:
-    engine: "3.9.1"
-- name: "3.8"
-  components:
-    engine: "3.8.1"
+    engine: "4.1.2"
