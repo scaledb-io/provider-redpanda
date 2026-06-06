@@ -1,4 +1,4 @@
-// package main implements the provider-clickhouse provider.
+// package main implements the provider-kafka provider.
 package main
 
 import (

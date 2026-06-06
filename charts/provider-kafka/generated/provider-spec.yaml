@@ -2,18 +2,18 @@
 # Do not edit manually. Run `make generate` to update.
 spec:
   componentTypes:
-    clickhouse:
+    kafka:
       versions:
         - default: true
-          image: clickhouse/clickhouse-server:25.3.5
-          version: 25.3.5
-        - image: clickhouse/clickhouse-server:25.5.2
-          version: 25.5.2
-        - image: clickhouse/clickhouse-server:24.8.14
-          version: 24.8.14
+          image: quay.io/strimzi/kafka:0.44.0-kafka-3.9.0
+          version: 3.9.0
+        - image: quay.io/strimzi/kafka:0.44.0-kafka-3.8.1
+          version: 3.8.1
+        - image: quay.io/strimzi/kafka:0.44.0-kafka-3.7.2
+          version: 3.7.2
   components:
     engine:
-      type: clickhouse
+      type: kafka
   topologies:
     replicated:
       components:
@@ -39,11 +39,11 @@ spec:
               uiType: select
           description: Optional advanced settings.
           label: Advanced
-        databaseVersion:
+        kafkaVersion:
           components:
             version:
               fieldParams:
-                label: ClickHouse Version
+                label: Kafka Version
                 modes:
                   edit:
                     disabled: true
@@ -55,8 +55,8 @@ spec:
               uiType: select
               validation:
                 required: true
-          description: Select the ClickHouse version to deploy.
-          label: Database Version
+          description: Select the Apache Kafka version to deploy.
+          label: Kafka Version
         resources:
           components:
             compute:
@@ -92,7 +92,7 @@ spec:
                   fieldParams:
                     badge: Gi
                     badgeToApi: true
-                    defaultValue: 8
+                    defaultValue: 4
                     label: Memory
                     step: 1
                   path: spec.components.engine.resources.limits.memory
@@ -106,14 +106,14 @@ spec:
                 - disk
               groupType: line
               uiType: group
-          description: Compute resources and storage per ClickHouse replica.
+          description: Compute resources and storage per Kafka broker.
           label: Resources
         scaling:
           components:
             replicas:
               fieldParams:
-                defaultValue: 2
-                label: Replicas
+                defaultValue: 3
+                label: Brokers
                 modes:
                   edit:
                     disabled: true
@@ -121,12 +121,12 @@ spec:
               path: spec.components.engine.replicas
               uiType: number
               validation:
-                min: 2
+                min: 3
                 required: true
-          description: Number of ClickHouse replicas. Minimum 2 for HA.
+          description: Number of Kafka brokers. Minimum 3 for HA (Raft quorum).
           label: Scaling
       sectionsOrder:
-        - databaseVersion
+        - kafkaVersion
         - scaling
         - resources
         - advanced
@@ -147,11 +147,11 @@ spec:
               uiType: select
           description: Optional advanced settings.
           label: Advanced
-        databaseVersion:
+        kafkaVersion:
           components:
             version:
               fieldParams:
-                label: ClickHouse Version
+                label: Kafka Version
                 modes:
                   edit:
                     disabled: true
@@ -163,8 +163,8 @@ spec:
               uiType: select
               validation:
                 required: true
-          description: Select the ClickHouse version to deploy.
-          label: Database Version
+          description: Select the Apache Kafka version to deploy.
+          label: Kafka Version
         resources:
           components:
             compute:
@@ -183,7 +183,7 @@ spec:
                   fieldParams:
                     badge: Gi
                     badgeToApi: true
-                    defaultValue: 25
+                    defaultValue: 10
                     label: Disk
                   path: spec.components.engine.storage.size
                   uiType: number
@@ -200,7 +200,7 @@ spec:
                   fieldParams:
                     badge: Gi
                     badgeToApi: true
-                    defaultValue: 4
+                    defaultValue: 2
                     label: Memory
                     step: 1
                   path: spec.components.engine.resources.limits.memory
@@ -214,20 +214,20 @@ spec:
                 - disk
               groupType: line
               uiType: group
-          description: Configure compute resources and storage for the ClickHouse instance.
+          description: Configure compute resources and storage for the Kafka broker.
           label: Resources
       sectionsOrder:
-        - databaseVersion
+        - kafkaVersion
         - resources
         - advanced
   versions:
     - components:
-        engine: 25.3.5
+        engine: 3.9.0
       default: true
-      name: "25.3"
+      name: "3.9"
     - components:
-        engine: 25.5.2
-      name: "25.5"
+        engine: 3.8.1
+      name: "3.8"
     - components:
-        engine: 24.8.14
-      name: "24.8"
+        engine: 3.7.2
+      name: "3.7"

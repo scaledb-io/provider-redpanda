@@ -2,15 +2,15 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ include "provider-clickhouse.fullname" . }}
+  name: {{ include "provider-kafka.fullname" . }}
   labels:
-    {{- include "provider-clickhouse.labels" . | nindent 4 }}
+    {{- include "provider-kafka.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ include "provider-clickhouse.fullname" . }}
+  name: {{ include "provider-kafka.fullname" . }}
 subjects:
   - kind: ServiceAccount
-    name: {{ include "provider-clickhouse.serviceAccountName" . }}
+    name: {{ include "provider-kafka.serviceAccountName" . }}
     namespace: {{ .Release.Namespace }}
 {{- end }}
