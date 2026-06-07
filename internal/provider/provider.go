@@ -350,9 +350,14 @@ func redpandaReadyCondition(rp *unstructured.Unstructured) (bool, string) {
 
 // buildConnectionDetails returns the Redpanda Kafka-compatible bootstrap endpoint.
 // The Redpanda Operator creates a ClusterIP Service named after the instance.
-// Internal Kafka bootstrap: <name>.<namespace>.svc:9092
+// Internal Kafka bootstrap: <name>.<namespace>.svc:9093
+//
+// The operator also deploys Redpanda Console as a separate Deployment named
+// <instance>-console, exposed on port 8080. We surface its URL here so
+// OpenEverest can link to it directly from the instance detail view.
 func buildConnectionDetails(c *controller.Context) controller.ConnectionDetails {
 	host := fmt.Sprintf("%s.%s.svc", c.Name(), c.Namespace())
+	consoleHost := fmt.Sprintf("%s-console.%s.svc", c.Name(), c.Namespace())
 	return controller.ConnectionDetails{
 		Type:     "redpanda",
 		Provider: common.ProviderName,
@@ -362,6 +367,7 @@ func buildConnectionDetails(c *controller.Context) controller.ConnectionDetails 
 		AdditionalProperties: map[string]string{
 			"adminAPI":       fmt.Sprintf("http://%s:%s", host, common.AdminPort),
 			"schemaRegistry": fmt.Sprintf("http://%s:%s", host, common.SchemaRegistryPort),
+			"console":        fmt.Sprintf("http://%s:%s", consoleHost, common.ConsolePort),
 		},
 	}
 }

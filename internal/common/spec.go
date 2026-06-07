@@ -51,6 +51,11 @@ const (
 	// SchemaRegistryPort is the Schema Registry port (built-in to Redpanda).
 	SchemaRegistryPort = "8081"
 
+	// ConsolePort is the Redpanda Console (web UI) port.
+	// The operator deploys the console as a separate Deployment named <instance>-console
+	// with a ClusterIP Service on port 8080.
+	ConsolePort = "8080"
+
 	// RedpandaGroup is the Kubernetes API group for the Redpanda cluster CR.
 	// Source: github.com/redpanda-data/redpanda-operator/operator/api/redpanda/v1alpha2
 	RedpandaGroup = "cluster.redpanda.com"
