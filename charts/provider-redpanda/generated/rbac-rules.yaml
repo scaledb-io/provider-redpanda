@@ -1,143 +1,94 @@
 - apiGroups:
-  - core.openeverest.io
+    - ""
   resources:
-  - instances
+    - configmaps
+    - persistentvolumeclaims
+    - secrets
+    - services
   verbs:
-  - get
-  - list
-  - watch
-  - update
-  - patch
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
 - apiGroups:
-  - core.openeverest.io
+    - ""
   resources:
-  - instances/status
+    - endpoints
+    - pods
   verbs:
-  - get
-  - update
-  - patch
+    - get
+    - list
+    - watch
 - apiGroups:
-  - core.openeverest.io
+    - ""
   resources:
-  - providers
+    - events
   verbs:
-  - get
-  - list
-  - watch
-  - update
-  - patch
+    - create
+    - patch
 - apiGroups:
-  - coordination.k8s.io
+    - apps
   resources:
-  - leases
+    - statefulsets
   verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
+    - get
+    - list
+    - watch
 - apiGroups:
-  - ""
+    - cluster.redpanda.com
   resources:
-  - events
+    - redpandas
   verbs:
-  - create
-  - patch
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
 - apiGroups:
-  - cluster.redpanda.com
+    - cluster.redpanda.com
   resources:
-  - redpandas
+    - redpandas/finalizers
   verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
+    - update
 - apiGroups:
-  - cluster.redpanda.com
+    - cluster.redpanda.com
   resources:
-  - redpandas/status
+    - redpandas/status
   verbs:
-  - get
+    - get
 - apiGroups:
-  - cluster.redpanda.com
+    - coordination.k8s.io
   resources:
-  - redpandas/finalizers
+    - leases
   verbs:
-  - update
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
 - apiGroups:
-  - ""
+    - core.openeverest.io
   resources:
-  - pods
+    - instances
+    - providers
   verbs:
-  - get
-  - list
-  - watch
+    - get
+    - list
+    - patch
+    - update
+    - watch
 - apiGroups:
-  - ""
+    - core.openeverest.io
   resources:
-  - services
+    - instances/status
   verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - ""
-  resources:
-  - endpoints
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - persistentvolumeclaims
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - ""
-  resources:
-  - secrets
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - apps
-  resources:
-  - statefulsets
-  verbs:
-  - get
-  - list
-  - watch
+    - get
+    - patch
+    - update

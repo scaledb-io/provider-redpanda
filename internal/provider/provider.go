@@ -195,16 +195,19 @@ func (p *Provider) Cleanup(c *controller.Context) error {
 //
 //	spec:
 //	  chartRef:
-//	    useFlux: false    # use operator's embedded chart, not Flux
+//	    useFlux: false     # use operator's embedded chart, not Flux
 //	  clusterSpec:
 //	    statefulset:
 //	      replicas: <n>
+//	      additionalRedpandaCmdFlags:
+//	        - "--smp=<n>" # explicit --smp (Redpanda Operator v26.x doesn't translate cpu.cores)
 //	    resources:
 //	      cpu:
-//	        cores: <quantity>
-//	      memory:
-//	        container:
-//	          max: <quantity>
+//	        cores: <n>     # sets CPU request+limit (nominal; see --smp above for actual SMP)
+//	      requests:
+//	        memory: <qty> # standard k8s memory request
+//	      limits:
+//	        memory: <qty> # equals request → Guaranteed QoS
 //	    storage:
 //	      persistentVolume:
 //	        enabled: true
@@ -230,22 +233,44 @@ func buildRedpanda(c *controller.Context, replicas int) (*unstructured.Unstructu
 		pvSpec["storageClass"] = *storageClass
 	}
 
+	// Compute --smp (Seastar thread count) from the configured CPU cores.
+	//
+	// NOTE: Redpanda Operator v26.x does NOT translate resources.cpu.cores into
+	// CPU request/limit on the container, so --smp is not derived from cgroup CPU
+	// quota. We set --smp explicitly via additionalRedpandaCmdFlags to ensure the
+	// correct core count regardless of operator version. Verified: 2026-06-07.
+	smpCount := cpuToSMP(cpu)
+
 	// Build the full clusterSpec.
+	//
+	// Resource spec for v1alpha2 (verified against Redpanda docs, 2026-06-07):
+	//   resources.cpu.cores   — Redpanda-specific; sets CPU request+limit (in theory)
+	//   resources.requests.memory — standard k8s memory request
+	//   resources.limits.memory   — standard k8s memory limit (set equal → Guaranteed QoS)
+	//
+	// The older v1alpha1 structure (resources.memory.container.max/min) is NOT used in v1alpha2.
 	clusterSpec := map[string]interface{}{
 		"statefulset": map[string]interface{}{
 			"replicas": int64(replicas),
+			// Explicitly set --smp so Redpanda uses the configured core count.
+			// Without this, Seastar auto-detects all CPUs on the node, causing
+			// memory-per-shard to fall below Redpanda's 1 GiB minimum.
+			"additionalRedpandaCmdFlags": []interface{}{
+				fmt.Sprintf("--smp=%d", smpCount),
+			},
 		},
 		"resources": map[string]interface{}{
 			"cpu": map[string]interface{}{
-				// Redpanda uses integer cores (thread-per-core model).
-				// Pass as a string quantity so the Helm chart parses it correctly.
+				// Redpanda uses a thread-per-core (TPC) model via Seastar's --smp flag.
+				// resources.cpu.cores sets --smp and both CPU request+limit simultaneously.
 				"cores": cpu.String(),
 			},
-			"memory": map[string]interface{}{
-				"container": map[string]interface{}{
-					"max": memory.String(),
-					"min": memory.String(),
-				},
+			// Standard k8s memory request/limit (set equal to enforce Guaranteed QoS).
+			"requests": map[string]interface{}{
+				"memory": memory.String(),
+			},
+			"limits": map[string]interface{}{
+				"memory": memory.String(),
 			},
 		},
 		"storage": map[string]interface{}{
@@ -413,4 +438,17 @@ func resolveStorage(engine corev1alpha1.ComponentSpec) (size resource.Quantity, 
 	}
 	storageClass = engine.Storage.StorageClass
 	return
+}
+
+// cpuToSMP converts a CPU quantity to a Redpanda --smp count.
+// Redpanda uses a thread-per-core model; --smp sets the number of reactor threads.
+// We round up to the nearest whole core (minimum 1) since fractional cores are
+// not meaningful for TPC workloads.
+func cpuToSMP(cpu resource.Quantity) int64 {
+	millis := cpu.MilliValue()
+	cores := (millis + 999) / 1000 // ceiling division: 500m → 1, 1000m → 1, 2500m → 3
+	if cores < 1 {
+		return 1
+	}
+	return cores
 }

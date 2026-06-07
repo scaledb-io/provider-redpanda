@@ -5,79 +5,24 @@ metadata:
   name: manager-role
 rules:
 - apiGroups:
-  - core.openeverest.io
+  - ""
   resources:
-  - instances
+  - configmaps
+  - persistentvolumeclaims
+  - secrets
+  - services
   verbs:
-  - get
-  - list
-  - watch
-  - update
-  - patch
-- apiGroups:
-  - core.openeverest.io
-  resources:
-  - instances/status
-  verbs:
-  - get
-  - update
-  - patch
-- apiGroups:
-  - core.openeverest.io
-  resources:
-  - providers
-  verbs:
-  - get
-  - list
-  - watch
-  - update
-  - patch
-- apiGroups:
-  - coordination.k8s.io
-  resources:
-  - leases
-  verbs:
-  - get
-  - list
-  - watch
   - create
-  - update
-  - patch
   - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
 - apiGroups:
   - ""
   resources:
-  - events
-  verbs:
-  - create
-  - patch
-- apiGroups:
-  - cluster.redpanda.com
-  resources:
-  - redpandas
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - cluster.redpanda.com
-  resources:
-  - redpandas/status
-  verbs:
-  - get
-- apiGroups:
-  - cluster.redpanda.com
-  resources:
-  - redpandas/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - ""
-  resources:
+  - endpoints
   - pods
   verbs:
   - get
@@ -86,59 +31,10 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - services
+  - events
   verbs:
-  - get
-  - list
-  - watch
   - create
-  - update
   - patch
-  - delete
-- apiGroups:
-  - ""
-  resources:
-  - endpoints
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - persistentvolumeclaims
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - ""
-  resources:
-  - secrets
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
 - apiGroups:
   - apps
   resources:
@@ -147,3 +43,58 @@ rules:
   - get
   - list
   - watch
+- apiGroups:
+  - cluster.redpanda.com
+  resources:
+  - redpandas
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cluster.redpanda.com
+  resources:
+  - redpandas/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - cluster.redpanda.com
+  resources:
+  - redpandas/status
+  verbs:
+  - get
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - core.openeverest.io
+  resources:
+  - instances
+  - providers
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - core.openeverest.io
+  resources:
+  - instances/status
+  verbs:
+  - get
+  - patch
+  - update

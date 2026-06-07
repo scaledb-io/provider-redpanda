@@ -1,3 +1,17 @@
+// Copyright (C) 2026 The OpenEverest Contributors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 // Package common defines shared constants used across the provider.
 package common
 
@@ -26,7 +40,10 @@ const (
 	DefaultReplicatedReplicas = 3
 
 	// KafkaPort is the Kafka-compatible API port exposed by Redpanda.
-	KafkaPort = "9092"
+	// The Redpanda Helm chart (via the operator) exposes the internal Kafka listener
+	// on port 9093 (named "internal"). The external listener is on 9094.
+	// Consumers within the cluster (Debezium, Kafka Connect) should use port 9093.
+	KafkaPort = "9093"
 
 	// AdminPort is the Redpanda Admin API port.
 	AdminPort = "9644"
