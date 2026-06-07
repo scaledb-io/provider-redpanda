@@ -199,9 +199,11 @@ func (p *Provider) Cleanup(c *controller.Context) error {
 //	  clusterSpec:
 //	    statefulset:
 //	      replicas: <n>
+//	      additionalRedpandaCmdFlags:
+//	        - "--smp=<n>" # explicit --smp (Redpanda Operator v26.x doesn't translate cpu.cores)
 //	    resources:
 //	      cpu:
-//	        cores: <n>     # sets --smp + CPU request+limit (Redpanda-specific)
+//	        cores: <n>     # sets CPU request+limit (nominal; see --smp above for actual SMP)
 //	      requests:
 //	        memory: <qty> # standard k8s memory request
 //	      limits:
@@ -231,10 +233,18 @@ func buildRedpanda(c *controller.Context, replicas int) (*unstructured.Unstructu
 		pvSpec["storageClass"] = *storageClass
 	}
 
+	// Compute --smp (Seastar thread count) from the configured CPU cores.
+	//
+	// NOTE: Redpanda Operator v26.x does NOT translate resources.cpu.cores into
+	// CPU request/limit on the container, so --smp is not derived from cgroup CPU
+	// quota. We set --smp explicitly via additionalRedpandaCmdFlags to ensure the
+	// correct core count regardless of operator version. Verified: 2026-06-07.
+	smpCount := cpuToSMP(cpu)
+
 	// Build the full clusterSpec.
 	//
 	// Resource spec for v1alpha2 (verified against Redpanda docs, 2026-06-07):
-	//   resources.cpu.cores   — Redpanda-specific; sets --smp and both CPU request+limit
+	//   resources.cpu.cores   — Redpanda-specific; sets CPU request+limit (in theory)
 	//   resources.requests.memory — standard k8s memory request
 	//   resources.limits.memory   — standard k8s memory limit (set equal → Guaranteed QoS)
 	//
@@ -242,6 +252,12 @@ func buildRedpanda(c *controller.Context, replicas int) (*unstructured.Unstructu
 	clusterSpec := map[string]interface{}{
 		"statefulset": map[string]interface{}{
 			"replicas": int64(replicas),
+			// Explicitly set --smp so Redpanda uses the configured core count.
+			// Without this, Seastar auto-detects all CPUs on the node, causing
+			// memory-per-shard to fall below Redpanda's 1 GiB minimum.
+			"additionalRedpandaCmdFlags": []interface{}{
+				fmt.Sprintf("--smp=%d", smpCount),
+			},
 		},
 		"resources": map[string]interface{}{
 			"cpu": map[string]interface{}{
@@ -422,4 +438,17 @@ func resolveStorage(engine corev1alpha1.ComponentSpec) (size resource.Quantity, 
 	}
 	storageClass = engine.Storage.StorageClass
 	return
+}
+
+// cpuToSMP converts a CPU quantity to a Redpanda --smp count.
+// Redpanda uses a thread-per-core model; --smp sets the number of reactor threads.
+// We round up to the nearest whole core (minimum 1) since fractional cores are
+// not meaningful for TPC workloads.
+func cpuToSMP(cpu resource.Quantity) int64 {
+	millis := cpu.MilliValue()
+	cores := (millis + 999) / 1000 // ceiling division: 500m → 1, 1000m → 1, 2500m → 3
+	if cores < 1 {
+		return 1
+	}
+	return cores
 }

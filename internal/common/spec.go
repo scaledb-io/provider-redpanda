@@ -26,7 +26,10 @@ const (
 	DefaultReplicatedReplicas = 3
 
 	// KafkaPort is the Kafka-compatible API port exposed by Redpanda.
-	KafkaPort = "9092"
+	// The Redpanda Helm chart (via the operator) exposes the internal Kafka listener
+	// on port 9093 (named "internal"). The external listener is on 9094.
+	// Consumers within the cluster (Debezium, Kafka Connect) should use port 9093.
+	KafkaPort = "9093"
 
 	// AdminPort is the Redpanda Admin API port.
 	AdminPort = "9644"
