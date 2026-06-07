@@ -4,40 +4,43 @@ package common
 const (
 	// ProviderName is the canonical name of this provider.
 	// Must match the Provider CR name registered in OpenEverest.
-	ProviderName = "provider-strimzi-kafka"
+	ProviderName = "provider-redpanda"
 
-	// ComponentEngine is the logical name of the Kafka engine component.
+	// ComponentEngine is the logical name of the Redpanda engine component.
 	ComponentEngine = "engine"
 
-	// ComponentTypeKafka is the component type name, matching versions.yaml.
-	ComponentTypeKafka = "kafka"
+	// ComponentTypeRedpanda is the component type name, matching versions.yaml.
+	ComponentTypeRedpanda = "redpanda"
 
 	// TopologyStandalone is the single-broker topology name.
 	TopologyStandalone = "standalone"
 
-	// TopologyReplicated is the replicated topology name (3+ brokers, KRaft quorum).
+	// TopologyReplicated is the replicated topology name (3+ brokers, Raft quorum).
 	TopologyReplicated = "replicated"
-
-	// KafkaClusterName is the cluster name used inside the Kafka CR.
-	// Strimzi uses this as part of the pod and service naming scheme.
-	KafkaClusterName = "kafka"
 
 	// DefaultStandaloneReplicas is the broker count for the standalone topology.
 	DefaultStandaloneReplicas = 1
 
 	// DefaultReplicatedReplicas is the default broker count for the replicated topology.
-	// Minimum 3 for Raft quorum and replication factor safety.
+	// Minimum 3 for Raft quorum.
 	DefaultReplicatedReplicas = 3
 
-	// BootstrapPort is the plain (non-TLS) Kafka client port exposed by Strimzi.
-	BootstrapPort = "9092"
+	// KafkaPort is the Kafka-compatible API port exposed by Redpanda.
+	KafkaPort = "9092"
 
-	// KafkaMetadataVersion4_2 is the KRaft metadata version for Kafka 4.2.x.
-	KafkaMetadataVersion4_2 = "4.2-IV0"
+	// AdminPort is the Redpanda Admin API port.
+	AdminPort = "9644"
 
-	// KafkaMetadataVersion4_1 is the KRaft metadata version for Kafka 4.1.x.
-	KafkaMetadataVersion4_1 = "4.1-IV0"
+	// SchemaRegistryPort is the Schema Registry port (built-in to Redpanda).
+	SchemaRegistryPort = "8081"
 
-	// DefaultMetadataVersion is used when the version-specific value is not resolved.
-	DefaultMetadataVersion = KafkaMetadataVersion4_2
+	// RedpandaGroup is the Kubernetes API group for the Redpanda cluster CR.
+	// Source: github.com/redpanda-data/redpanda-operator/operator/api/redpanda/v1alpha2
+	RedpandaGroup = "cluster.redpanda.com"
+
+	// RedpandaVersion is the Kubernetes API version for the Redpanda cluster CR.
+	RedpandaVersion = "v1alpha2"
+
+	// RedpandaKind is the Kubernetes kind for the Redpanda cluster CR.
+	RedpandaKind = "Redpanda"
 )

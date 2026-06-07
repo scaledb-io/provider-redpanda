@@ -1,24 +1,21 @@
-# Example Instance CR for the provider-strimzi-kafka provider.
-# Apply this to your cluster to create a database instance.
-#
-# Prerequisites:
-#   1. OpenEverest CRDs installed
-#   2. Provider CR applied (provider.yaml)
-#   3. Operator running
-#   4. Provider controller running
+# Full-featured Instance CR — 3-broker HA Redpanda cluster.
+# Replicated topology with explicit version and storage class.
 apiVersion: core.openeverest.io/v1alpha1
 kind: Instance
 metadata:
-  name: example-instance
+  name: my-redpanda
+  namespace: everest-dev
 spec:
-  provider: provider-strimzi-kafka
+  provider: provider-redpanda
+  topology: replicated
+  version: "25.1"
   components:
     engine:
-      type: 
-      replicas: 1
+      replicas: 3
       resources:
         limits:
-          cpu: "1"
-          memory: 2G
+          cpu: "2"
+          memory: 4Gi
       storage:
-        size: 10Gi
+        size: 50Gi
+        # storageClass: standard  # uncomment to pin a storage class

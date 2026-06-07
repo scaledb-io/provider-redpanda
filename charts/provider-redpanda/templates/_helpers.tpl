@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "provider-strimzi-kafka.name" -}}
+{{- define "provider-redpanda.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "provider-strimzi-kafka.fullname" -}}
+{{- define "provider-redpanda.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "provider-strimzi-kafka.chart" -}}
+{{- define "provider-redpanda.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "provider-strimzi-kafka.labels" -}}
-helm.sh/chart: {{ include "provider-strimzi-kafka.chart" . }}
-{{ include "provider-strimzi-kafka.selectorLabels" . }}
+{{- define "provider-redpanda.labels" -}}
+helm.sh/chart: {{ include "provider-redpanda.chart" . }}
+{{ include "provider-redpanda.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "provider-strimzi-kafka.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "provider-strimzi-kafka.name" . }}
+{{- define "provider-redpanda.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "provider-redpanda.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "provider-strimzi-kafka.serviceAccountName" -}}
+{{- define "provider-redpanda.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "provider-strimzi-kafka.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "provider-redpanda.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
@@ -64,7 +64,7 @@ Create the name of the service account to use
 {{/*
 Container image
 */}}
-{{- define "provider-strimzi-kafka.image" -}}
+{{- define "provider-redpanda.image" -}}
 {{- $tag := default .Chart.AppVersion .Values.image.tag -}}
 {{- printf "%s:%s" .Values.image.repository $tag -}}
 {{- end }}

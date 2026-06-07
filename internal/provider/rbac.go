@@ -1,21 +1,24 @@
 // Package provider defines the provider implementation.
-// RBAC markers for the Strimzi Kafka operator resources.
+// RBAC markers for the provider runtime and Redpanda Operator resources.
 package provider
 
-// Strimzi Kafka cluster
-// +kubebuilder:rbac:groups=kafka.strimzi.io,resources=kafkas,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=kafka.strimzi.io,resources=kafkas/status,verbs=get
-// +kubebuilder:rbac:groups=kafka.strimzi.io,resources=kafkas/finalizers,verbs=update
+// OpenEverest core resources (provider runtime)
+// +kubebuilder:rbac:groups=core.openeverest.io,resources=instances,verbs=get;list;watch;update;patch
+// +kubebuilder:rbac:groups=core.openeverest.io,resources=instances/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=core.openeverest.io,resources=providers,verbs=get;list;watch;update;patch
 
-// Strimzi KafkaNodePool (KRaft mode)
-// +kubebuilder:rbac:groups=kafka.strimzi.io,resources=kafkanodepools,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=kafka.strimzi.io,resources=kafkanodepools/status,verbs=get
+// Leader election
+// +kubebuilder:rbac:groups=coordination.k8s.io,resources=leases,verbs=get;list;watch;create;update;patch;delete
 
-// Strimzi KafkaTopic and KafkaUser (managed by entity operator)
-// +kubebuilder:rbac:groups=kafka.strimzi.io,resources=kafkatopics,verbs=get;list;watch
-// +kubebuilder:rbac:groups=kafka.strimzi.io,resources=kafkausers,verbs=get;list;watch
+// Events
+// +kubebuilder:rbac:groups="",resources=events,verbs=create;patch
 
-// Core Kubernetes resources managed by the Strimzi operator on our behalf
+// Redpanda cluster
+// +kubebuilder:rbac:groups=cluster.redpanda.com,resources=redpandas,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=cluster.redpanda.com,resources=redpandas/status,verbs=get
+// +kubebuilder:rbac:groups=cluster.redpanda.com,resources=redpandas/finalizers,verbs=update
+
+// Core Kubernetes resources
 // +kubebuilder:rbac:groups="",resources=pods,verbs=get;list;watch
 // +kubebuilder:rbac:groups="",resources=services,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups="",resources=endpoints,verbs=get;list;watch
@@ -23,4 +26,3 @@ package provider
 // +kubebuilder:rbac:groups="",resources=configmaps,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups="",resources=secrets,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=apps,resources=statefulsets,verbs=get;list;watch
-// +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch

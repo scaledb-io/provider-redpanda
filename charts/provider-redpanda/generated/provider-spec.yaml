@@ -2,18 +2,16 @@
 # Do not edit manually. Run `make generate` to update.
 spec:
   componentTypes:
-    kafka:
+    redpanda:
       versions:
         - default: true
-          image: quay.io/strimzi/kafka:1.0.0-kafka-4.2.0
-          version: 4.2.0
-        - image: quay.io/strimzi/kafka:1.0.0-kafka-4.1.2
-          version: 4.1.2
-        - image: quay.io/strimzi/kafka:1.0.0-kafka-4.1.1
-          version: 4.1.1
+          image: docker.redpanda.com/redpandadata/redpanda:v25.1.8
+          version: v25.1.8
+        - image: docker.redpanda.com/redpandadata/redpanda:v24.3.12
+          version: v24.3.12
   components:
     engine:
-      type: kafka
+      type: redpanda
   topologies:
     replicated:
       components:
@@ -39,11 +37,11 @@ spec:
               uiType: select
           description: Optional advanced settings.
           label: Advanced
-        kafkaVersion:
+        redpandaVersion:
           components:
             version:
               fieldParams:
-                label: Kafka Version
+                label: Redpanda Version
                 modes:
                   edit:
                     disabled: true
@@ -55,8 +53,8 @@ spec:
               uiType: select
               validation:
                 required: true
-          description: Select the Apache Kafka version to deploy.
-          label: Kafka Version
+          description: Select the Redpanda version to deploy.
+          label: Redpanda Version
         resources:
           components:
             compute:
@@ -106,7 +104,7 @@ spec:
                 - disk
               groupType: line
               uiType: group
-          description: Compute resources and storage per Kafka broker.
+          description: Compute resources and storage per Redpanda broker.
           label: Resources
         scaling:
           components:
@@ -123,10 +121,10 @@ spec:
               validation:
                 min: 3
                 required: true
-          description: Number of Kafka brokers. Minimum 3 for HA (Raft quorum).
+          description: Number of Redpanda brokers. Minimum 3 for HA (Raft quorum).
           label: Scaling
       sectionsOrder:
-        - kafkaVersion
+        - redpandaVersion
         - scaling
         - resources
         - advanced
@@ -147,11 +145,11 @@ spec:
               uiType: select
           description: Optional advanced settings.
           label: Advanced
-        kafkaVersion:
+        redpandaVersion:
           components:
             version:
               fieldParams:
-                label: Kafka Version
+                label: Redpanda Version
                 modes:
                   edit:
                     disabled: true
@@ -163,8 +161,8 @@ spec:
               uiType: select
               validation:
                 required: true
-          description: Select the Apache Kafka version to deploy.
-          label: Kafka Version
+          description: Select the Redpanda version to deploy.
+          label: Redpanda Version
         resources:
           components:
             compute:
@@ -183,13 +181,13 @@ spec:
                   fieldParams:
                     badge: Gi
                     badgeToApi: true
-                    defaultValue: 10
+                    defaultValue: 20
                     label: Disk
                   path: spec.components.engine.storage.size
                   uiType: number
                   validation:
                     int: true
-                    min: 1
+                    min: 10
                     modes:
                       edit:
                         celExpressions:
@@ -206,7 +204,7 @@ spec:
                   path: spec.components.engine.resources.limits.memory
                   uiType: number
                   validation:
-                    min: 1
+                    min: 2
                     required: true
               componentsOrder:
                 - cpu
@@ -214,17 +212,17 @@ spec:
                 - disk
               groupType: line
               uiType: group
-          description: Configure compute resources and storage for the Kafka broker.
+          description: Configure compute resources and storage for the Redpanda broker.
           label: Resources
       sectionsOrder:
-        - kafkaVersion
+        - redpandaVersion
         - resources
         - advanced
   versions:
     - components:
-        engine: 4.2.0
+        engine: v25.1.8
       default: true
-      name: "4.2"
+      name: "25.1"
     - components:
-        engine: 4.1.2
-      name: "4.1"
+        engine: v24.3.12
+      name: "24.3"

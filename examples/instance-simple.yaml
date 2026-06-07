@@ -1,13 +1,19 @@
 # Minimal Instance CR — smallest viable configuration.
+# Single-broker Redpanda cluster (standalone topology).
 apiVersion: core.openeverest.io/v1alpha1
 kind: Instance
 metadata:
-  name: my-database-simple
+  name: my-redpanda-simple
+  namespace: everest-dev
 spec:
-  provider: provider-strimzi-kafka
+  provider: provider-redpanda
+  topology: standalone
   components:
     engine:
-      type: 
       replicas: 1
+      resources:
+        limits:
+          cpu: "1"
+          memory: 2Gi
       storage:
-        size: 10Gi
+        size: 20Gi

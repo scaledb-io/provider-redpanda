@@ -1,5 +1,5 @@
-# Standalone topology: single-broker Apache Kafka cluster (KRaft mode).
-# No ZooKeeper required — KRaft handles metadata natively.
+# Standalone topology: single-broker Redpanda cluster.
+# No ZooKeeper required — Redpanda uses its own Raft-based metadata store.
 # Suitable for development, local testing, and non-HA workloads.
 # NOT recommended for production.
 
@@ -9,15 +9,15 @@ config:
 
 ui:
   sections:
-    kafkaVersion:
-      label: "Kafka Version"
-      description: "Select the Apache Kafka version to deploy."
+    redpandaVersion:
+      label: "Redpanda Version"
+      description: "Select the Redpanda version to deploy."
       components:
         version:
           uiType: select
           path: spec.version
           fieldParams:
-            label: "Kafka Version"
+            label: "Redpanda Version"
             optionsPath: spec.versions
             optionsPathConfig:
               labelPath: "name"
@@ -30,7 +30,7 @@ ui:
 
     resources:
       label: "Resources"
-      description: "Configure compute resources and storage for the Kafka broker."
+      description: "Configure compute resources and storage for the Redpanda broker."
       components:
         compute:
           uiType: group
@@ -57,19 +57,19 @@ ui:
                 badgeToApi: true
               validation:
                 required: true
-                min: 1
+                min: 2
             disk:
               uiType: number
               path: spec.components.engine.storage.size
               fieldParams:
                 label: "Disk"
-                defaultValue: 10
+                defaultValue: 20
                 badge: "Gi"
                 badgeToApi: true
               validation:
                 required: true
                 int: true
-                min: 1
+                min: 10
                 modes:
                   edit:
                     celExpressions:
@@ -97,6 +97,6 @@ ui:
             provider: storageClasses
 
   sectionsOrder:
-    - kafkaVersion
+    - redpandaVersion
     - resources
     - advanced

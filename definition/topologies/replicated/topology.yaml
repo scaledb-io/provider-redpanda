@@ -1,6 +1,6 @@
-# Replicated topology: multi-broker Apache Kafka cluster (KRaft mode).
-# KRaft handles metadata natively — no ZooKeeper required.
-# Minimum 3 brokers for Raft quorum and replication factor safety.
+# Replicated topology: multi-broker Redpanda cluster.
+# Redpanda uses a built-in Raft-based metadata store — no ZooKeeper required.
+# Minimum 3 brokers for Raft quorum and partition replication safety.
 # Suitable for production workloads requiring high availability.
 
 config:
@@ -9,15 +9,15 @@ config:
 
 ui:
   sections:
-    kafkaVersion:
-      label: "Kafka Version"
-      description: "Select the Apache Kafka version to deploy."
+    redpandaVersion:
+      label: "Redpanda Version"
+      description: "Select the Redpanda version to deploy."
       components:
         version:
           uiType: select
           path: spec.version
           fieldParams:
-            label: "Kafka Version"
+            label: "Redpanda Version"
             optionsPath: spec.versions
             optionsPathConfig:
               labelPath: "name"
@@ -30,7 +30,7 @@ ui:
 
     scaling:
       label: "Scaling"
-      description: "Number of Kafka brokers. Minimum 3 for HA (Raft quorum)."
+      description: "Number of Redpanda brokers. Minimum 3 for HA (Raft quorum)."
       components:
         replicas:
           uiType: number
@@ -48,7 +48,7 @@ ui:
 
     resources:
       label: "Resources"
-      description: "Compute resources and storage per Kafka broker."
+      description: "Compute resources and storage per Redpanda broker."
       components:
         compute:
           uiType: group
@@ -115,7 +115,7 @@ ui:
             provider: storageClasses
 
   sectionsOrder:
-    - kafkaVersion
+    - redpandaVersion
     - scaling
     - resources
     - advanced
