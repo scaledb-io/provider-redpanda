@@ -195,16 +195,17 @@ func (p *Provider) Cleanup(c *controller.Context) error {
 //
 //	spec:
 //	  chartRef:
-//	    useFlux: false    # use operator's embedded chart, not Flux
+//	    useFlux: false     # use operator's embedded chart, not Flux
 //	  clusterSpec:
 //	    statefulset:
 //	      replicas: <n>
 //	    resources:
 //	      cpu:
-//	        cores: <quantity>
-//	      memory:
-//	        container:
-//	          max: <quantity>
+//	        cores: <n>     # sets --smp + CPU request+limit (Redpanda-specific)
+//	      requests:
+//	        memory: <qty> # standard k8s memory request
+//	      limits:
+//	        memory: <qty> # equals request → Guaranteed QoS
 //	    storage:
 //	      persistentVolume:
 //	        enabled: true
@@ -231,21 +232,29 @@ func buildRedpanda(c *controller.Context, replicas int) (*unstructured.Unstructu
 	}
 
 	// Build the full clusterSpec.
+	//
+	// Resource spec for v1alpha2 (verified against Redpanda docs, 2026-06-07):
+	//   resources.cpu.cores   — Redpanda-specific; sets --smp and both CPU request+limit
+	//   resources.requests.memory — standard k8s memory request
+	//   resources.limits.memory   — standard k8s memory limit (set equal → Guaranteed QoS)
+	//
+	// The older v1alpha1 structure (resources.memory.container.max/min) is NOT used in v1alpha2.
 	clusterSpec := map[string]interface{}{
 		"statefulset": map[string]interface{}{
 			"replicas": int64(replicas),
 		},
 		"resources": map[string]interface{}{
 			"cpu": map[string]interface{}{
-				// Redpanda uses integer cores (thread-per-core model).
-				// Pass as a string quantity so the Helm chart parses it correctly.
+				// Redpanda uses a thread-per-core (TPC) model via Seastar's --smp flag.
+				// resources.cpu.cores sets --smp and both CPU request+limit simultaneously.
 				"cores": cpu.String(),
 			},
-			"memory": map[string]interface{}{
-				"container": map[string]interface{}{
-					"max": memory.String(),
-					"min": memory.String(),
-				},
+			// Standard k8s memory request/limit (set equal to enforce Guaranteed QoS).
+			"requests": map[string]interface{}{
+				"memory": memory.String(),
+			},
+			"limits": map[string]interface{}{
+				"memory": memory.String(),
 			},
 		},
 		"storage": map[string]interface{}{
